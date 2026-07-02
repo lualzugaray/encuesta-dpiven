@@ -258,7 +258,7 @@ function EncuestaFlow({ nombre }: { nombre: string }) {
         </p>
         <div className="mt-8 pt-6 border-t border-gray-100">
           <p className="text-sm text-gray-400 italic">— Deborah Piven</p>
-          <p className="text-xs text-gray-300 mt-1">Remax Uruguay</p>
+          <p className="text-xs text-gray-300 mt-1">Remax Unico</p>
         </div>
       </div>
     )
@@ -277,14 +277,14 @@ function EncuestaFlow({ nombre }: { nombre: string }) {
             onError={() => {}}
           />
         </div>
-        <p className="text-blue-600 font-medium text-xs uppercase tracking-widest mb-2">Deborah Piven Inmuebles</p>
+        <p className="text-blue-600 font-medium text-xs uppercase tracking-widest mb-2">Deborah Piven Remax Unico</p>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Hola, {nombre} 👋
+          {nombre !== 'Cliente' ? `Hola, ${nombre} 👋` : 'Hola! 👋'}
         </h1>
         <p className="text-gray-500 text-sm leading-relaxed mb-8">
-          Fue un placer acompañarte en este proceso.<br />
-          Me gustaría saber cómo fue tu experiencia.<br />
-          <span className="text-gray-400">Solo te llevará un par de minutos.</span>
+          Fue un privilegio acompañarte en este proceso.<br />
+          Si me regalás dos minutos para contarme tu experiencia, te lo voy a agradecer mucho.<br />
+          <span className="text-gray-400">Tu opinión me ayuda a crecer y a ayudar a otros a elegir con confianza.</span>
         </p>
         <button
           onClick={() => setPaso(1)}
@@ -331,9 +331,10 @@ function EncuestaContent() {
         <div className="bg-white rounded-3xl shadow-xl shadow-blue-100/50 p-8">
           <EncuestaFlow nombre={nombre} />
         </div>
-        <p className="text-center text-xs text-gray-300 mt-5">
-          Remax Uruguay · Deborah Piven
-        </p>
+        <div className="flex items-center justify-center gap-6 mt-6">
+          <Image src="/7.png" alt="Deborah Piven" width={80} height={80} className="object-contain opacity-80" />
+          <Image src="/8.png" alt="Remax Unico" width={80} height={80} className="object-contain opacity-80" />
+        </div>
       </div>
     </div>
   )
