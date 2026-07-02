@@ -127,7 +127,7 @@ function PreguntaStep({
               <button
                 key={op}
                 type="button"
-                onClick={() => { onChange(op); if (!esUltima) setTimeout(onNext, 200) }}
+                onClick={() => onChange(op)}
                 className={`w-full text-left px-5 py-4 rounded-2xl border-2 text-sm font-medium transition-all ${
                   valor === op
                     ? 'border-blue-500 bg-blue-50 text-blue-700'
