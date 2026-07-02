@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Deborah Piven — Remax Unico",
     description: "Fue un privilegio acompañarte. Me regalás dos minutos para contarme tu experiencia?",
-    images: [{ url: "/deborah.jpg", width: 800, height: 800 }],
+    images: [{ url: "/7.png", width: 800, height: 800 }],
     locale: "es_UY",
     type: "website",
   },
