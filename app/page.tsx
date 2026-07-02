@@ -288,12 +288,12 @@ function EncuestaFlow({ nombreUrl }: { nombreUrl: string }) {
           <span className="text-gray-400">Tu opinión me ayuda a crecer y a ayudar a otros a elegir con confianza.</span>
         </p>
         <div className="mb-5 text-left">
-          <label className="block text-xs font-medium text-gray-500 mb-1.5 text-center">¿Cuál es tu nombre?</label>
+          <label className="block text-xs font-medium text-gray-500 mb-1.5 text-center">¿Cuál es tu nombre completo?</label>
           <input
             type="text"
             value={nombre}
             onChange={e => setNombre(e.target.value)}
-            placeholder="Tu nombre"
+            placeholder="Tu nombre y apellido"
             className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-400 transition-colors text-center"
           />
         </div>
