@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Encuesta — Deborah Piven Remax Unico",
   description: "Contanos tu experiencia con nuestros servicios",
-  icons: { icon: "/deborah.jpg" },
+  icons: { icon: "/7.png" },
 };
 
 export default function RootLayout({
