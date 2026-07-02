@@ -77,11 +77,11 @@ async function enviarEmail(nombre: string, respuestas: Record<string, string>) {
   <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
     <div style="background:#2563eb;padding:24px 32px;">
       <h1 style="color:#fff;margin:0;font-size:20px;font-weight:600;">Nueva encuesta recibida</h1>
-      <p style="color:#bfdbfe;margin:4px 0 0;font-size:14px;">Deborah Piven Inmuebles</p>
+      <p style="color:#bfdbfe;margin:4px 0 0;font-size:14px;">Deborah Piven Remax Unico</p>
     </div>
     <div style="padding:24px 32px;">
-      <p style="color:#18181b;font-size:15px;margin:0 0 20px;">
-        <strong>${nombre}</strong> completó la encuesta de satisfacción.
+      <p style="color:#18181b;font-size:16px;margin:0 0 20px;">
+        <strong style="color:#2563eb;">${nombre}</strong> completó la encuesta de satisfacción.
       </p>
       <table style="width:100%;border-collapse:collapse;border:1px solid #e4e4e7;border-radius:8px;overflow:hidden;">
         ${filas}
