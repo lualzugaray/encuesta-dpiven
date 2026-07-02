@@ -192,8 +192,9 @@ function PreguntaStep({
   )
 }
 
-function EncuestaFlow({ nombre }: { nombre: string }) {
+function EncuestaFlow({ nombreUrl }: { nombreUrl: string }) {
   const [paso, setPaso] = useState(0) // 0 = bienvenida
+  const [nombre, setNombre] = useState(nombreUrl !== 'Cliente' ? nombreUrl : '')
   const [respuestas, setRespuestas] = useState<Record<string, string>>({})
   const [enviando, setEnviando] = useState(false)
   const [enviado, setEnviado] = useState(false)
@@ -226,7 +227,7 @@ function EncuestaFlow({ nombre }: { nombre: string }) {
       const res = await fetch('/api/encuesta', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, respuestas }),
+        body: JSON.stringify({ nombre: nombre || 'Anónimo', respuestas }),
       })
       if (res.ok) {
         setEnviado(true)
@@ -249,7 +250,7 @@ function EncuestaFlow({ nombre }: { nombre: string }) {
           <span className="text-4xl">🎉</span>
         </div>
         <h2 className="text-2xl font-bold text-gray-800 mb-3">
-          ¡Gracias, {nombre}!
+          {nombre ? `¡Muchas gracias, ${nombre}!` : '¡Muchas gracias!'}
         </h2>
         <p className="text-gray-500 leading-relaxed">
           Tu opinión es muy valiosa para mí.<br />
@@ -279,13 +280,23 @@ function EncuestaFlow({ nombre }: { nombre: string }) {
         </div>
         <p className="text-blue-600 font-medium text-xs uppercase tracking-widest mb-2">Deborah Piven Remax Unico</p>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          {nombre !== 'Cliente' ? `Hola, ${nombre} 👋` : 'Hola! 👋'}
+          {nombre ? `Hola, ${nombre} 👋` : 'Hola! 👋'}
         </h1>
-        <p className="text-gray-500 text-sm leading-relaxed mb-8">
+        <p className="text-gray-500 text-sm leading-relaxed mb-6">
           Fue un privilegio acompañarte en este proceso.<br />
           Si me regalás dos minutos para contarme tu experiencia, te lo voy a agradecer mucho.<br />
           <span className="text-gray-400">Tu opinión me ayuda a crecer y a ayudar a otros a elegir con confianza.</span>
         </p>
+        <div className="mb-5 text-left">
+          <label className="block text-xs font-medium text-gray-500 mb-1.5 text-center">¿Cuál es tu nombre?</label>
+          <input
+            type="text"
+            value={nombre}
+            onChange={e => setNombre(e.target.value)}
+            placeholder="Tu nombre"
+            className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-400 transition-colors text-center"
+          />
+        </div>
         <button
           onClick={() => setPaso(1)}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-base transition-all shadow-md shadow-blue-200 active:scale-95"
@@ -329,7 +340,7 @@ function EncuestaContent() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center py-10 px-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-xl shadow-blue-100/50 p-8">
-          <EncuestaFlow nombre={nombre} />
+          <EncuestaFlow nombreUrl={nombre} />
         </div>
         <div className="flex items-center justify-center gap-6 mt-6">
           <Image src="/7.png" alt="Deborah Piven" width={80} height={80} className="object-contain opacity-80" />
