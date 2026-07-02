@@ -1,6 +1,7 @@
 'use client'
 import { useSearchParams } from 'next/navigation'
 import { useState, Suspense } from 'react'
+import Image from 'next/image'
 
 const preguntas = [
   {
@@ -22,7 +23,7 @@ const preguntas = [
   },
   {
     id: 'q4',
-    texto: '¿Recomendarías mi servicio a un amigo?',
+    texto: '¿Recomendarías mi servicio a un amigo o familiar?',
     tipo: 'opciones' as const,
     opciones: ['Sí, definitivamente', 'Probablemente sí', 'No estoy seguro/a', 'Probablemente no'],
   },
@@ -43,55 +44,184 @@ const preguntas = [
 
 function Estrellas({ valor, onChange }: { valor: number; onChange: (v: number) => void }) {
   const [hover, setHover] = useState(0)
+  const etiquetas = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente']
   return (
-    <div className="flex gap-2 mt-2">
-      {[1, 2, 3, 4, 5].map(n => (
+    <div className="flex flex-col items-center gap-3 py-4">
+      <div className="flex gap-3">
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            type="button"
+            onMouseEnter={() => setHover(n)}
+            onMouseLeave={() => setHover(0)}
+            onClick={() => onChange(n)}
+            className="text-5xl transition-all hover:scale-110 focus:outline-none"
+            aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
+          >
+            <span className={(hover || valor) >= n ? 'text-yellow-400' : 'text-gray-200'}>★</span>
+          </button>
+        ))}
+      </div>
+      <p className="text-sm font-medium text-gray-500 min-h-[20px]">
+        {etiquetas[hover || valor] || ''}
+      </p>
+    </div>
+  )
+}
+
+type Pregunta = typeof preguntas[number]
+
+function PreguntaStep({
+  pregunta,
+  valor,
+  onChange,
+  onNext,
+  onPrev,
+  esUltima,
+  paso,
+  total,
+  enviando,
+  nombre,
+}: {
+  pregunta: Pregunta
+  valor: string
+  onChange: (v: string) => void
+  onNext: () => void
+  onPrev: () => void
+  esUltima: boolean
+  paso: number
+  total: number
+  enviando: boolean
+  nombre: string
+}) {
+  const puedeAvanzar = 'opcional' in pregunta && pregunta.opcional ? true : !!valor
+
+  return (
+    <div className="flex flex-col min-h-0">
+      {/* Progreso */}
+      <div className="mb-6">
+        <div className="flex justify-between text-xs text-gray-400 mb-2">
+          <span>Pregunta {paso} de {total}</span>
+          <span>{Math.round((paso / total) * 100)}%</span>
+        </div>
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-blue-500 rounded-full transition-all duration-500"
+            style={{ width: `${(paso / total) * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Pregunta */}
+      <div className="flex-1">
+        <p className="text-lg font-semibold text-gray-800 mb-5 leading-snug">
+          {pregunta.texto}
+          {'opcional' in pregunta && pregunta.opcional && (
+            <span className="ml-2 text-xs font-normal text-gray-400">(opcional)</span>
+          )}
+        </p>
+
+        {'tipo' in pregunta && pregunta.tipo === 'opciones' && 'opciones' in pregunta && pregunta.opciones && (
+          <div className="space-y-3">
+            {pregunta.opciones.map(op => (
+              <button
+                key={op}
+                type="button"
+                onClick={() => { onChange(op); if (!esUltima) setTimeout(onNext, 200) }}
+                className={`w-full text-left px-5 py-4 rounded-2xl border-2 text-sm font-medium transition-all ${
+                  valor === op
+                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50/40'
+                }`}
+              >
+                {op}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {'tipo' in pregunta && pregunta.tipo === 'estrellas' && (
+          <Estrellas valor={parseInt(valor || '0')} onChange={v => onChange(String(v))} />
+        )}
+
+        {'tipo' in pregunta && pregunta.tipo === 'texto' && (
+          <textarea
+            value={valor}
+            onChange={e => onChange(e.target.value)}
+            placeholder={'placeholder' in pregunta ? pregunta.placeholder : ''}
+            rows={4}
+            autoFocus
+            className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-400 resize-none transition-colors"
+          />
+        )}
+      </div>
+
+      {/* Botones */}
+      <div className="flex gap-3 mt-6">
+        {paso > 1 && (
+          <button
+            type="button"
+            onClick={onPrev}
+            className="px-5 py-3 rounded-2xl border-2 border-gray-200 text-sm text-gray-600 hover:border-gray-300 hover:bg-gray-50 transition-all"
+          >
+            ← Atrás
+          </button>
+        )}
         <button
-          key={n}
           type="button"
-          onMouseEnter={() => setHover(n)}
-          onMouseLeave={() => setHover(0)}
-          onClick={() => onChange(n)}
-          className="text-4xl transition-transform hover:scale-110 focus:outline-none"
-          aria-label={`${n} estrella${n > 1 ? 's' : ''}`}
+          onClick={onNext}
+          disabled={!puedeAvanzar || enviando}
+          className={`flex-1 py-3 rounded-2xl text-sm font-semibold transition-all ${
+            puedeAvanzar && !enviando
+              ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-200'
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+          }`}
         >
-          <span className={(hover || valor) >= n ? 'text-yellow-400' : 'text-gray-300'}>★</span>
+          {enviando
+            ? 'Enviando...'
+            : esUltima
+            ? `Enviar respuestas`
+            : 'Siguiente →'}
         </button>
-      ))}
-      {valor > 0 && (
-        <span className="self-center ml-2 text-sm text-gray-500">
-          {['', 'Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'][valor]}
-        </span>
+      </div>
+
+      {!puedeAvanzar && pregunta.tipo !== 'texto' && (
+        <p className="text-center text-xs text-gray-400 mt-3">Seleccioná una opción para continuar</p>
       )}
     </div>
   )
 }
 
-function EncuestaForm({ nombre }: { nombre: string }) {
+function EncuestaFlow({ nombre }: { nombre: string }) {
+  const [paso, setPaso] = useState(0) // 0 = bienvenida
   const [respuestas, setRespuestas] = useState<Record<string, string>>({})
   const [enviando, setEnviando] = useState(false)
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState('')
 
+  const preguntaActual = preguntas[paso - 1]
+  const esUltima = paso === preguntas.length
+
   function setRespuesta(id: string, valor: string) {
     setRespuestas(prev => ({ ...prev, [id]: valor }))
   }
 
-  function validar() {
-    for (const p of preguntas) {
-      if (!p.opcional && !respuestas[p.id]) return false
-    }
-    return true
-  }
-
-  async function enviar(e: React.FormEvent) {
-    e.preventDefault()
-    if (!validar()) {
-      setError('Por favor respondé todas las preguntas obligatorias.')
+  async function siguiente() {
+    if (esUltima) {
+      await enviar()
       return
     }
+    setPaso(p => p + 1)
     setError('')
+  }
+
+  function anterior() {
+    setPaso(p => Math.max(1, p - 1))
+  }
+
+  async function enviar() {
     setEnviando(true)
+    setError('')
     try {
       const res = await fetch('/api/encuesta', {
         method: 'POST',
@@ -111,103 +241,98 @@ function EncuestaForm({ nombre }: { nombre: string }) {
     }
   }
 
+  // Pantalla de agradecimiento
   if (enviado) {
     return (
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">🎉</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">¡Muchas gracias, {nombre}!</h2>
-        <p className="text-gray-600 max-w-md mx-auto">
-          Tu opinión es muy valiosa para mí. Me ayuda a mejorar y seguir brindando el mejor servicio posible.
+      <div className="text-center py-8">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+          <span className="text-4xl">🎉</span>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-3">
+          ¡Gracias, {nombre}!
+        </h2>
+        <p className="text-gray-500 leading-relaxed">
+          Tu opinión es muy valiosa para mí.<br />
+          Me ayuda a seguir mejorando y brindando<br />
+          el mejor servicio posible.
         </p>
-        <p className="text-gray-500 text-sm mt-4">— Deborah Piven</p>
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <p className="text-sm text-gray-400 italic">— Deborah Piven</p>
+          <p className="text-xs text-gray-300 mt-1">Remax Uruguay</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Pantalla de bienvenida
+  if (paso === 0) {
+    return (
+      <div className="text-center">
+        <div className="relative w-28 h-28 mx-auto mb-5">
+          <Image
+            src="/deborah.jpg"
+            alt="Deborah Piven"
+            fill
+            className="rounded-full object-cover shadow-lg ring-4 ring-white"
+            onError={() => {}}
+          />
+        </div>
+        <p className="text-blue-600 font-medium text-xs uppercase tracking-widest mb-2">Deborah Piven Inmuebles</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">
+          Hola, {nombre} 👋
+        </h1>
+        <p className="text-gray-500 text-sm leading-relaxed mb-8">
+          Fue un placer acompañarte en este proceso.<br />
+          Me gustaría saber cómo fue tu experiencia.<br />
+          <span className="text-gray-400">Solo te llevará un par de minutos.</span>
+        </p>
+        <button
+          onClick={() => setPaso(1)}
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-base transition-all shadow-md shadow-blue-200 active:scale-95"
+        >
+          Empezar encuesta →
+        </button>
+        <p className="text-xs text-gray-300 mt-4">Tu información es confidencial</p>
       </div>
     )
   }
 
   return (
-    <form onSubmit={enviar} className="space-y-8">
-      {preguntas.map((p, idx) => (
-        <div key={p.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <p className="font-semibold text-gray-800 mb-1">
-            <span className="text-blue-600 mr-2">{idx + 1}.</span>
-            {p.texto}
-            {!p.opcional && <span className="text-red-400 ml-1">*</span>}
-          </p>
-
-          {p.tipo === 'opciones' && p.opciones && (
-            <div className="space-y-2 mt-3">
-              {p.opciones.map(op => (
-                <label key={op} className="flex items-center gap-3 cursor-pointer group">
-                  <input
-                    type="radio"
-                    name={p.id}
-                    value={op}
-                    checked={respuestas[p.id] === op}
-                    onChange={() => setRespuesta(p.id, op)}
-                    className="w-4 h-4 text-blue-600 accent-blue-600"
-                  />
-                  <span className={`text-sm transition-colors ${respuestas[p.id] === op ? 'text-blue-700 font-medium' : 'text-gray-700 group-hover:text-gray-900'}`}>
-                    {op}
-                  </span>
-                </label>
-              ))}
-            </div>
-          )}
-
-          {p.tipo === 'estrellas' && (
-            <Estrellas
-              valor={parseInt(respuestas[p.id] || '0')}
-              onChange={v => setRespuesta(p.id, String(v))}
-            />
-          )}
-
-          {p.tipo === 'texto' && (
-            <textarea
-              value={respuestas[p.id] || ''}
-              onChange={e => setRespuesta(p.id, e.target.value)}
-              placeholder={'placeholder' in p ? p.placeholder : ''}
-              rows={3}
-              className="mt-2 w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
-            />
-          )}
-        </div>
-      ))}
-
+    <div>
       {error && (
-        <p className="text-red-500 text-sm text-center">{error}</p>
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm text-center">
+          {error}
+        </div>
       )}
-
-      <button
-        type="submit"
-        disabled={enviando}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-semibold py-4 rounded-2xl text-base transition-colors shadow-md"
-      >
-        {enviando ? 'Enviando...' : 'Enviar respuestas'}
-      </button>
-    </form>
+      <PreguntaStep
+        pregunta={preguntaActual}
+        valor={respuestas[preguntaActual.id] || ''}
+        onChange={v => setRespuesta(preguntaActual.id, v)}
+        onNext={siguiente}
+        onPrev={anterior}
+        esUltima={esUltima}
+        paso={paso}
+        total={preguntas.length}
+        enviando={enviando}
+        nombre={nombre}
+      />
+    </div>
   )
 }
 
 function EncuestaContent() {
   const params = useSearchParams()
-  const nombre = params.get('nombre') || 'cliente'
-  const nombreMostrado = nombre.charAt(0).toUpperCase() + nombre.slice(1)
+  const nombreRaw = params.get('nombre') || 'cliente'
+  const nombre = nombreRaw.charAt(0).toUpperCase() + nombreRaw.slice(1)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-10 px-4">
-      <div className="max-w-xl mx-auto">
-        <div className="text-center mb-8">
-          <p className="text-blue-600 font-medium text-sm uppercase tracking-wider mb-1">Deborah Piven Inmuebles</p>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Hola, {nombreMostrado} 👋
-          </h1>
-          <p className="text-gray-600 text-base">
-            Me gustaría conocer tu experiencia. Solo te llevará un par de minutos.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-xl shadow-blue-100/50 p-8">
+          <EncuestaFlow nombre={nombre} />
         </div>
-        <EncuestaForm nombre={nombreMostrado} />
-        <p className="text-center text-xs text-gray-400 mt-8">
-          Remax Uruguay · Deborah Piven · Tu información es confidencial
+        <p className="text-center text-xs text-gray-300 mt-5">
+          Remax Uruguay · Deborah Piven
         </p>
       </div>
     </div>
@@ -217,8 +342,8 @@ function EncuestaContent() {
 export default function Page() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="text-gray-400">Cargando...</div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-gray-300 text-sm">Cargando...</div>
       </div>
     }>
       <EncuestaContent />
