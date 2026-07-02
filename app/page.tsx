@@ -299,7 +299,8 @@ function EncuestaFlow({ nombreUrl }: { nombreUrl: string }) {
         </div>
         <button
           onClick={() => setPaso(1)}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl text-base transition-all shadow-md shadow-blue-200 active:scale-95"
+          disabled={!nombre.trim()}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-2xl text-base transition-all shadow-md shadow-blue-200 active:scale-95"
         >
           Empezar encuesta →
         </button>
