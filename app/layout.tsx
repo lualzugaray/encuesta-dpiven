@@ -2,9 +2,16 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Encuesta — Deborah Piven Remax Unico",
-  description: "Contanos tu experiencia con nuestros servicios",
+  title: "Deborah Piven — Remax Unico",
+  description: "Fue un privilegio acompañarte. Me regalás dos minutos para contarme tu experiencia?",
   icons: { icon: "/7.png" },
+  openGraph: {
+    title: "Deborah Piven — Remax Unico",
+    description: "Fue un privilegio acompañarte. Me regalás dos minutos para contarme tu experiencia?",
+    images: [{ url: "/deborah.jpg", width: 800, height: 800 }],
+    locale: "es_UY",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
