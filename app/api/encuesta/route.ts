@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer'
 const PREGUNTAS: Record<string, string> = {
   q1: '¿Qué buscabas al contactarte?',
   q2: 'Evaluación del asesoramiento (estrellas)',
-  q3: '¿Qué destacás del proceso?',
+  q3: '¿Qué destacarías de mi servicio en ese proceso?',
   q4: '¿Recomendarías el servicio?',
   q5: '¿Algo más que agregar?',
   q6: '¿Podemos compartir en redes?',

@@ -17,7 +17,7 @@ const preguntas = [
   },
   {
     id: 'q3',
-    texto: '¿Qué fue lo que más destacás del proceso?',
+    texto: '¿Qué destacarías de mi servicio en ese proceso?',
     tipo: 'texto' as const,
     placeholder: 'Contanos con tus palabras...',
   },
@@ -293,7 +293,7 @@ function EncuestaFlow({ nombreUrl }: { nombreUrl: string }) {
             type="text"
             value={nombre}
             onChange={e => setNombre(e.target.value)}
-            placeholder="Tu nombre y apellido"
+            placeholder="Nombre completo"
             className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm text-gray-800 focus:outline-none focus:border-blue-400 transition-colors text-center"
           />
         </div>
